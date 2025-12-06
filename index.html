@@ -58,7 +58,7 @@
 <script type="text/babel" data-type="module">
 const { useState, useMemo, useEffect, useRef } = React;
 
-// --- Initial Data (High-Res Banner URLs Used) ---
+// --- Initial Data (Using HTTPS for all images) ---
 const standardBannerRatio = "w=1170&h=640&fit=crop"; 
 const initialEvents = [
   { id: 1, title: "Taylor Swift | The Eras Tour", artist: "Taylor Swift", date: "2025-03-15", time: "19:30", venue: "SoFi Stadium", location: "Los Angeles, CA", price: 199, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?${standardBannerRatio}`, description: "Experience the magic of Taylor Swift's record-breaking Eras Tour", availableTickets: 150 },
@@ -69,9 +69,7 @@ const initialEvents = [
   { id: 6, title: "Kevin Hart: Reality Check", artist: "Kevin Hart", date: "2025-09-19", time: "20:30", venue: "The Apollo Theater", location: "New York, NY", price: 90, category: "comedy", genre: "Comedy", image: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?${standardBannerRatio}`, description: "Non-stop laughs from the comedy superstar.", availableTickets: 70 },
   { id: 7, title: "Inter Miami CF vs LA Galaxy", artist: "MLS", date: "2025-10-10", time: "19:00", venue: "DRV PNK Stadium", location: "Fort Lauderdale, FL", price: 75, category: "sports", genre: "Soccer", image: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?${standardBannerRatio}`, description: "A major clash in the MLS season.", availableTickets: 180 },
   { id: 8, title: "The Lion King Musical", artist: "Broadway Musical", date: "2025-12-05", time: "18:00", venue: "Minskoff Theatre", location: "New York, NY", price: 150, category: "theater", genre: "Musical", image: `https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1503095396549-807759245b35?${standardBannerRatio}`, description: "A classic Disney adaptation on stage.", availableTickets: 120 },
-  // Trending Event Placeholder
   { id: 9, title: "Beyoncé: RENAISSANCE WORLD TOUR", artist: "Beyoncé", date: "2025-07-25", time: "20:00", venue: "MetLife Stadium", location: "East Rutherford, NJ", price: 250, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?${standardBannerRatio}`, description: "The most talked-about tour of the year.", availableTickets: 50 },
-  // Specific Ticket Request
   { 
     id: 10, 
     title: "Ariana Grande - The Eternal Sunshine Tour", 
@@ -350,7 +348,7 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
                 <h2 className="text-2xl font-bold">{title}</h2>
                 {/* TEXT COLOR: Primary Blue #0072CE */}
                 <button 
-                    // FIX: Removed inline comment // Mock 'See All' from inside the JSX attribute
+                    // FIX: This line was the source of the initial SyntaxError. The comment is now removed.
                     onClick={() => setView('home', items[0]?.category)} 
                     className="text-sm tm-primary-blue font-semibold hover:underline"
                 >
@@ -600,7 +598,7 @@ const MyTicketsPage = ({ purchasedTickets, setView, setEditingTicket, setShowTic
                 ) : (
                     <div className="space-y-4">
                         {displayTickets.map((ticket, index) => (
-                            <div key={index} className="bg-white rounded-lg shadow-md flex overflow-hidden border border-green-500/50">
+                            <div key={ticket.purchaseId || index} className="bg-white rounded-lg shadow-md flex overflow-hidden border border-green-500/50">
                                 {/* Date Box for Mobile */}
                                 <div className={`w-20 flex flex-col justify-center items-center text-white p-2 flex-shrink-0 ${activeTab === 'upcoming' ? 'bg-green-500' : 'bg-gray-500'}`}>
                                     <div className="text-lg font-bold">{new Date(ticket.date).getDate()}</div>
@@ -908,9 +906,9 @@ const EventDetailPage = ({ selectedEvent, setView, addToCart }) => {
                     <button 
                         onClick={handleAddToCart}
                         className={`tm-btn w-full py-3 text-lg mt-8 ${isAdded ? 'bg-green-600' : ''}`}
-                        disabled={isAdded}
+                        disabled={selectedEvent.availableTickets === 0 || isAdded}
                     >
-                        {isAdded ? 'Added to Cart!' : `Find Tickets from $${selectedEvent.price.toFixed(2)}`}
+                        {selectedEvent.availableTickets === 0 ? 'Sold Out' : isAdded ? 'Added to Cart!' : `Find Tickets from $${selectedEvent.price.toFixed(2)}`}
                     </button>
                 </div>
             </div>
@@ -943,6 +941,7 @@ const AddEditTicketModal = ({ show, onClose, onSave, ticketToEdit }) => {
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 z-[100] flex items-center justify-center p-4">
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative m-4 max-h-[90vh] overflow-y-auto">
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
                 <h2 className="text-2xl font-bold mb-4">{ticketToEdit ? 'Edit Purchased Ticket' : 'Add Custom Ticket'}</h2>
                 <p className="text-sm text-gray-500 mb-4">Ariana Grande ticket added automatically for demo purposes.</p>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -975,10 +974,12 @@ const App = () => {
     return <TicketmasterClone />;
 };
 
-// **THE FIX**: Execute ReactDOM.createRoot immediately after defining App inside the Babel block.
-// This ensures the App component exists before the render call is attempted.
+// **CRITICAL RENDER STEP**
+// 1. Get the root element.
 const rootContainer = document.getElementById('root');
+// 2. Create the root.
 const root = ReactDOM.createRoot(rootContainer);
+// 3. Render the application (this must be the final action in the script).
 root.render(React.createElement(App));
 
 </script>
