@@ -348,7 +348,6 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
                 <h2 className="text-2xl font-bold">{title}</h2>
                 {/* TEXT COLOR: Primary Blue #0072CE */}
                 <button 
-                    // FIX: This line was the source of the initial SyntaxError. The comment is now removed.
                     onClick={() => setView('home', items[0]?.category)} 
                     className="text-sm tm-primary-blue font-semibold hover:underline"
                 >
