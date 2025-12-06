@@ -216,12 +216,12 @@ const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
                         </div>
                     </button>
                     
-                    {/* TICKETMASTER Logo (FIXED: Small Caps) - Small 't' uses Primary Blue #008CFF */}
+                    {/* TICKETMASTER Logo (FIXED: Small Caps AND Slanted/Italic) */}
                     <div className="flex items-center cursor-pointer" onClick={() => setView('home')}>
                         <div className="tm-bg-primary-blue rounded w-5 h-5 flex items-center justify-center mr-1">
                             <span style={{ color: 'white', fontSize: '14px', fontWeight: 'bold', fontFamily: 'serif' }}>t</span>
                         </div>
-                        <h1 className="text-lg font-bold text-white tracking-widest" style={{ textTransform: 'small-caps' }}>
+                        <h1 className="text-lg font-bold text-white tracking-widest **italic**" style={{ textTransform: 'small-caps' }}>
                             Ticketmaster<sup className="tm-logo-r">®</sup>
                         </h1>
                     </div>
@@ -478,21 +478,53 @@ const CartPage = () => <div className="p-8 text-center min-h-screen">
     <h2 className="text-2xl font-bold tm-dark-blue">Your Cart</h2>
     <p className="text-gray-600 mt-2">No items in your cart yet. Find an event to get started!</p>
 </div>;
+
 const FavoritesPage = () => <div className="p-8 text-center min-h-screen">
     <Heart size={48} className="text-red-500 mx-auto mb-4" />
     <h2 className="text-2xl font-bold tm-dark-blue">My Favorites</h2>
     <p className="text-gray-600 mt-2">Tap the heart icon on any event to save it here.</p>
 </div>;
+
 const AccountPage = () => <div className="p-8 text-center min-h-screen">
     <User size={48} className="tm-primary-blue mx-auto mb-4" />
     <h2 className="text-2xl font-bold tm-dark-blue">Account Settings</h2>
     <p className="text-gray-600 mt-2">Manage your profile, payment, and notifications here.</p>
 </div>;
-const MyTicketsPage = () => <div className="p-8 text-center min-h-screen">
-    <TicketIcon size={48} className="tm-primary-blue mx-auto mb-4" />
-    <h2 className="text-2xl font-bold tm-dark-blue">My Events & Tickets</h2>
-    <p className="text-gray-600 mt-2">Your confirmed and past tickets will appear here.</p>
-</div>;
+
+const MyTicketsPage = () => (
+    <div className="p-4 min-h-screen pb-20 bg-gray-100">
+        <h2 className="text-3xl font-bold tm-dark-blue mb-6">My Events & Tickets</h2>
+        
+        {/* Confirmed Ticket Stub for Ariana Grande */}
+        <div className="bg-white p-4 rounded-xl shadow-2xl border-t-4 border-l-4 border-b-2 border-r-2 tm-bg-primary-blue mb-6 border-opacity-70">
+            <div className="flex justify-between items-center mb-4 border-b pb-2 border-gray-200">
+                <h3 className="text-xl font-bold text-gray-800">Confirmed Ticket</h3>
+                <span className="text-sm font-semibold tm-primary-blue bg-blue-50/50 rounded-full px-3 py-1">UPCOMING</span>
+            </div>
+
+            <div className="space-y-3">
+                <p className="text-gray-900 text-lg font-bold">Ariana Grande - The Eternal Sunshine Tour</p>
+                <div className="text-sm text-gray-700">
+                    <p>🗓️ <span className="font-semibold">2026-07-12</span> @ 20:00</p>
+                    <p>📍 Barclays Center, Brooklyn, NY</p>
+                </div>
+
+                <div className="border-t border-dashed border-gray-300 pt-3">
+                    <p className="font-bold text-lg text-green-600">SECTION 101, ROW A, SEAT 5</p>
+                    <p className="text-xs text-gray-500 mt-1">Ticket Type: Verified Resale</p>
+                </div>
+            </div>
+        </div>
+        
+        {/* Special Note/Warning */}
+        <div className="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 shadow rounded-lg mb-6">
+            <p className="font-bold">⚠️ High Demand Alert!</p>
+            <p className="text-sm mt-1">This ticket was purchased for **$798.00**. Prices may be above face value due to high demand.</p>
+        </div>
+
+        <p className="text-center text-gray-500 pt-4">Your ticket barcode will appear closer to the event date.</p>
+    </div>
+);
 
 // --- Detail Page Component ---
 const DetailPage = ({ event }) => {
