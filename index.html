@@ -55,6 +55,276 @@
 <body>
     <div id="root"></div>
 
+<script type="text/babel" data-type="module">
+const { useState, useMemo, useEffect, useRef } = React;
+
+// --- Initial Data (Using HTTPS for all images) ---
+const standardBannerRatio = "w=1170&h=640&fit=crop"; 
+const initialEvents = [
+  { id: 1, title: "Taylor Swift | The Eras Tour", artist: "Taylor Swift", date: "2025-03-15", time: "19:30", venue: "SoFi Stadium", location: "Los Angeles, CA", price: 199, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?${standardBannerRatio}`, description: "Experience the magic of Taylor Swift's record-breaking Eras Tour", availableTickets: 150 },
+  { id: 2, title: "NBA Finals - Game 7", artist: "NBA", date: "2025-06-20", time: "20:00", venue: "Madison Square Garden", location: "New York, NY", price: 450, category: "sports", genre: "Basketball", image: `https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1546519638-68e109498ffc?${standardBannerRatio}`, description: "Witness history as two teams battle for the championship", availableTickets: 200 },
+  { id: 3, title: "Hamilton", artist: "Broadway Musical", date: "2025-04-10", time: "20:00", venue: "Richard Rodgers Theatre", location: "New York, NY", price: 175, category: "theater", genre: "Theater", image: `https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1503095396549-807759245b35?${standardBannerRatio}`, description: "The revolutionary Broadway musical phenomenon", availableTickets: 100 },
+  { id: 4, title: "Coldplay World Tour", artist: "Coldplay", date: "2025-05-22", time: "19:00", venue: "Wembley Stadium", location: "London, UK", price: 125, category: "music", genre: "Rock", image: `https://images.unsplash.com/photo-1469854523086-4f74d0a27178?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1469854523086-4f74d0a27178?${standardBannerRatio}`, description: "Don't miss Coldplay's spectacular world tour", availableTickets: 250 },
+  { id: 5, title: "Disney On Ice", artist: "Disney", date: "2025-11-01", time: "14:00", venue: "Staples Center", location: "Los Angeles, CA", price: 50, category: "family", genre: "Ice Show", image: `https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1546519638-68e109498ffc?${standardBannerRatio}`, description: "A magical show for the whole family.", availableTickets: 300 },
+  { id: 6, title: "Kevin Hart: Reality Check", artist: "Kevin Hart", date: "2025-09-19", time: "20:30", venue: "The Apollo Theater", location: "New York, NY", price: 90, category: "comedy", genre: "Comedy", image: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?${standardBannerRatio}`, description: "Non-stop laughs from the comedy superstar.", availableTickets: 70 },
+  { id: 7, title: "Inter Miami CF vs LA Galaxy", artist: "MLS", date: "2025-10-10", time: "19:00", venue: "DRV PNK Stadium", location: "Fort Lauderdale, FL", price: 75, category: "sports", genre: "Soccer", image: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?${standardBannerRatio}`, description: "A major clash in the MLS season.", availableTickets: 180 },
+  { id: 8, title: "The Lion King Musical", artist: "Broadway Musical", date: "2025-12-05", time: "18:00", venue: "Minskoff Theatre", location: "New York, NY", price: 150, category: "theater", genre: "Musical", image: `https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1503095396549-807759245b35?${standardBannerRatio}`, description: "A classic Disney adaptation on stage.", availableTickets: 120 },
+  { id: 9, title: "Beyoncé: RENAISSANCE WORLD TOUR", artist: "Beyoncé", date: "2025-07-25", time: "20:00", venue: "MetLife Stadium", location: "East Rutherford, NJ", price: 250, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?${standardBannerRatio}`, description: "The most talked-about tour of the year.", availableTickets: 50 },
+  { 
+    id: 10, 
+    title: "Ariana Grande - The Eternal Sunshine Tour", 
+    artist: "Ariana Grande", 
+    date: "2026-07-12", 
+    time: "20:00", 
+    venue: "Barclays Center", 
+    location: "Brooklyn, NY", 
+    price: 798,
+    category: "music", 
+    genre: "Pop", 
+    image: `https://images.unsplash.com/photo-1628155990263-6e7b165215b3?w=800&h=600&fit=crop`, 
+    banner: `https://images.unsplash.com/photo-1628155990263-6e7b165215b3?${standardBannerRatio}`, 
+    description: "The Eternal Sunshine Tour, a massive concert event.", 
+    availableTickets: 25,
+    isRequested: true
+  }
+];
+
+// --- Utility Functions (Icons) ---
+const Search = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+const Calendar = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>;
+const MapPin = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 12v.01"/><path d="M18 10c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 12 0Z"/></svg>;
+const ShoppingCart = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.63h9.75a2 2 0 0 0 2-1.63l2.15-10.43H3.21"/></svg>;
+const Heart = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3.5 1.02-4.5 2.5C10.95 4.1 9.21 3 7.5 3A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>;
+const ChevronLeft = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>;
+const ChevronRight = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>;
+const TicketIcon = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 9v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M10 7V4a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v3"/></svg>;
+const User = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
+const Globe = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2Z"/><path d="M12 2v20"/><path d="M2 12h20"/><path d="M14.9 8a5.57 5.57 0 0 0-5.8 0"/><path d="M14.9 16a5.57 5.57 0 0 0-5.8 0"/></svg>;
+const HelpCircle = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>;
+const LogOut = (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>;
+
+
+// --- State Management for Navigation and Modals ---
+const NavigationPanel = ({ show, onClose, setView, isLoggedIn, setIsLoggedIn }) => {
+    if (!show) return null;
+
+    const navItems = [
+        { label: "Home", view: "home" },
+        { label: "Concerts", view: "home", filter: "music" },
+        { label: "Sports", view: "home", filter: "sports" },
+        { label: "Arts, Theater & Comedy", view: "home", filter: "theater" },
+        { label: "Family", view: "home", filter: "family" },
+        { label: "My Events", view: "mytickets" },
+        { label: "Favorites", view: "favorites" },
+        { label: "Alerts", view: "alerts" },
+        { label: "Sell Tickets", view: "sell" },
+    ];
+
+    const handleItemClick = (item) => {
+        if (item.filter) {
+            setView('home', item.filter);
+        } else {
+            setView(item.view);
+        }
+        onClose();
+    };
+    
+    const handleLoginToggle = () => {
+        setIsLoggedIn(!isLoggedIn);
+        onClose();
+        alert(isLoggedIn ? "Logged out successfully!" : "Logged in as demo user.");
+    }
+
+    return (
+        <div className="fixed inset-0 z-[100] flex">
+            {/* Nav Content */}
+            <div className="w-64 bg-white shadow-2xl overflow-y-auto">
+                <div className="p-4 border-b">
+                    <button onClick={onClose} className="text-gray-600 hover:text-gray-900 mb-4">
+                        <ChevronLeft size={24} />
+                    </button>
+                    <div className="flex items-center space-x-2">
+                        {/* ICON COLOR: Primary Blue */}
+                        <User size={24} className="tm-primary-blue" />
+                        <span className="text-lg font-bold">My Account</span>
+                    </div>
+                </div>
+                
+                <div className="p-4 space-y-2">
+                    {navItems.map(item => (
+                        <button
+                            key={item.label}
+                            onClick={() => handleItemClick(item)}
+                            className="block w-full text-left py-2 px-1 text-gray-700 hover:bg-gray-100 rounded transition duration-150"
+                        >
+                            {item.label}
+                        </button>
+                    ))}
+                </div>
+                
+                <div className="border-t mt-4 p-4 space-y-2">
+                    <button onClick={handleLoginToggle} className="flex items-center space-x-3 text-left py-2 px-1 text-gray-700 hover:bg-gray-100 rounded w-full">
+                        {/* ICON COLOR: Red or Primary Blue */}
+                        {isLoggedIn ? <LogOut size={20} className="text-red-500" /> : <User size={20} className="tm-primary-blue" />}
+                        {/* TEXT COLOR: Red or Primary Blue */}
+                        <span className={isLoggedIn ? 'text-red-500 font-semibold' : 'tm-primary-blue font-semibold'}>
+                            {isLoggedIn ? "Sign Out" : "Sign In"}
+                        </span>
+                    </button>
+                    <div className="flex items-center space-x-3 py-2 px-1 text-gray-700">
+                        <Globe size={20} />
+                        <span>United States | English</span>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Overlay to close nav */}
+            <div className="flex-1 bg-black bg-opacity-50" onClick={onClose}></div>
+        </div>
+    );
+};
+
+// --- Shared Components ---
+
+// Simplified Header structure to ensure reliable sticking behavior
+const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
+    <header className="sticky top-0 z-50 w-full">
+        {/* Container for ALL header bars */}
+        <div className="tm-bg-dark-blue w-full"> 
+            {/* Top Black Bar: Location/Flag */}
+            <div className="bg-black p-2 flex justify-between items-center text-white text-xs">
+                {/* US Flag Icon */}
+                <div className="flex items-center space-x-1 cursor-pointer border border-gray-500 rounded-full p-0.5 hover:bg-gray-800 transition" onClick={() => alert('Country/Region Selector')}>
+                    <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center">
+                        <img src="https://flagcdn.com/us.svg" alt="US Flag" className="w-full h-auto" />
+                    </div>
+                    <span>US</span>
+                </div>
+            </div>
+
+            {/* Dark Blue Navigation Bar (Primary Nav) - COLOR: #003B70 */}
+            <div className="p-3 flex justify-between items-center text-white">
+                <div className="flex items-center space-x-4">
+                    {/* Menu Button (Three Lines) */}
+                    <button onClick={toggleNav} className="p-1">
+                        <div className="menu-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </button>
+                    
+                    {/* Ticketmaster Logo (FIXED: Small Caps) - Small 't' uses Primary Blue #0072CE */}
+                    <div className="flex items-center cursor-pointer" onClick={() => setView('home')}>
+                        <div className="tm-bg-primary-blue rounded w-5 h-5 flex items-center justify-center mr-1">
+                            <span style={{ color: 'white', fontSize: '14px', fontWeight: 'bold', fontFamily: 'serif' }}>t</span>
+                        </div>
+                        <h1 className="text-lg font-bold text-white tracking-widest" style={{ textTransform: 'small-caps' }}>
+                            TICKETMASTER<sup className="tm-logo-r">®</sup>
+                        </h1>
+                    </div>
+                </div>
+                
+                {/* My Account / Shopping Cart */}
+                <div className="flex items-center space-x-4">
+                    <button onClick={() => setView('cart')} className="relative p-1">
+                        <ShoppingCart size={24} className="text-white" />
+                    </button>
+                    <button onClick={() => setView('account')} className="p-1">
+                        <User size={24} className="text-white" />
+                    </button>
+                </div>
+            </div>
+            
+            {/* Location/Date Bar - COLOR: #003B70 */}
+            <div className="p-2.5 flex justify-between items-center text-white border-t border-gray-700">
+                <div className="flex items-center space-x-4 w-full">
+                    {/* LOCATION */}
+                    <div className="flex items-center space-x-1 flex-1 min-w-0 border border-gray-500 rounded-lg p-1.5 cursor-pointer hover:bg-gray-800 transition" onClick={() => alert('Location Selector')}>
+                        <MapPin size={18} className="text-white flex-shrink-0" />
+                        <div className="flex flex-col text-left text-sm flex-grow min-w-0">
+                            <span className="uppercase text-[10px] font-bold text-gray-400 truncate">LOCATION</span>
+                            <span className="font-semibold text-sm truncate">City or Zip Code</span>
+                        </div>
+                    </div>
+                    
+                    {/* DATES */}
+                    <div className="flex items-center space-x-1 flex-1 min-w-0 border border-gray-500 rounded-lg p-1.5 cursor-pointer hover:bg-gray-800 transition" onClick={() => alert('Dates Selector')}>
+                        <Calendar size={18} className="text-white flex-shrink-0" />
+                        <div className="flex flex-col text-left text-sm flex-grow min-w-0">
+                            <span className="uppercase text-[10px] font-bold text-gray-400 truncate">DATES</span>
+                            <span className="font-semibold text-sm truncate">All Dates</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Search Bar - COLOR: #003B70 */}
+            <div className="p-3 flex justify-center text-white border-t border-gray-700">
+                <div className="w-full bg-white rounded-lg flex items-center p-2 cursor-text" onClick={() => alert('Search functionality started')}>
+                    <div className="flex-1 min-w-0 pl-2">
+                        <span className="uppercase text-[10px] font-bold text-gray-400 block">SEARCH</span>
+                        <div className="flex items-center justify-between">
+                            <span className="text-gray-500 text-sm truncate">Artist, Event or Venue</span>
+                        </div>
+                    </div>
+                    {/* ICON COLOR: Primary Blue #0072CE */}
+                    <Search size={24} className="tm-primary-blue flex-shrink-0" />
+                </div>
+            </div>
+        </div>
+    </header>
+);
+
+const EventBanner = ({ event, setView, setSelectedEvent, isFeatured = false }) => (
+    <div 
+        className={`relative overflow-hidden rounded-lg shadow-lg cursor-pointer ${isFeatured ? 'h-[100px] sm:h-[140px]' : 'h-[200px] sm:h-[300px]'}`}
+        onClick={() => { setSelectedEvent(event); setView('detail'); }}
+    >
+        <img 
+            src={event.banner} 
+            alt={event.title} 
+            className="w-full h-full object-cover" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex flex-col justify-end">
+            {!isFeatured && <p className="text-white text-xs font-semibold uppercase">{event.genre} Event</p>}
+            <h3 className="text-white text-xl font-bold">{event.title}</h3>
+        </div>
+    </div>
+);
+
+const SectionSeparator = () => (
+    <div className="px-4">
+        <hr className="my-8 border-t border-gray-200" />
+    </div>
+);
+
+// New component for vertical list of events 
+const VerticalEventList = ({ events, setView, setSelectedEvent }) => (
+    <div className="space-y-4 px-4">
+        {events.map(event => (
+            <div 
+                key={event.id}
+                className="relative overflow-hidden rounded-lg shadow-md cursor-pointer border border-gray-100"
+                onClick={() => { setSelectedEvent(event); setView('detail'); }}
+            >
+                {/* Note: Standardized size for banner images */}
+                <img 
+                    src={event.banner} 
+                    alt={event.title} 
+                    className="w-full h-32 object-cover" 
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-3 flex flex-col justify-end">
+                    <p className="text-white text-xs font-semibold uppercase">{event.genre}</p>
+                    <h3 className="text-white text-lg font-bold">{event.title}</h3>
+                </div>
+            </div>
+        ))}
+    </div>
+);
+
+
+// --- SCROLLABLE SECTION (The component that needed the fix) ---
 const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = false }) => {
     const scrollRef = useRef(null);
     const [showArrows, setShowArrows] = useState(false);
@@ -62,7 +332,6 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
     useEffect(() => {
         if (scrollRef.current) {
              const { scrollWidth, clientWidth } = scrollRef.current;
-             // Only show arrows if content overflows
              setShowArrows(scrollWidth > clientWidth);
         }
     }, [items]);
@@ -77,7 +346,7 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
         <div className="mt-8">
             <div className="flex justify-between items-center px-4 mb-4">
                 <h2 className="text-2xl font-bold">{title}</h2>
-                {/* TEXT COLOR: Primary Blue #0072CE */}
+                {/* FIX APPLIED HERE: Cleaned JSX structure and spacing for the onClick handler */}
                 <button 
                     onClick={() => setView('home', items[0]?.category)} 
                     className="text-sm tm-primary-blue font-semibold hover:underline"
@@ -89,19 +358,22 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
             <div className="relative">
                 <div ref={scrollRef} className="horizontal-scroll flex space-x-4 px-4 pb-4">
                     {items.map(event => (
-                        <div key={event.id} className="scroll-item w-[160px] relative" style={{ minWidth: '160px' }} onClick={() => { setSelectedEvent(event); setView('detail'); }}>
+                        <div 
+                            key={event.id} 
+                            className="scroll-item w-[160px] relative" 
+                            style={{ minWidth: '160px' }} 
+                            onClick={() => { setSelectedEvent(event); setView('detail'); }}
+                        >
                             <img 
                                 src={event.image} 
                                 alt={event.title} 
                                 className="w-full h-32 object-cover rounded-lg shadow cursor-pointer"
                             />
                             {presale && (
-                                {/* BACKGROUND COLOR: Primary Blue #0072CE */}
                                 <span className="absolute top-1 left-1 tm-bg-primary-blue text-white text-[10px] font-bold px-2 py-0.5 rounded">PRESALE</span>
                             )}
                             <div className="mt-2 text-sm">
                                 <p className="text-gray-500 text-xs uppercase">{event.genre}</p>
-                                {/* TEXT COLOR: Primary Blue #0072CE */}
                                 <button className="tm-primary-blue font-semibold text-left text-sm hover:underline">{event.artist}</button>
                             </div>
                         </div>
@@ -122,3 +394,115 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
         </div>
     );
 };
+
+
+// --- Full Page Components ---
+
+const HomePage = ({ events, setView, setSelectedEvent }) => {
+    // Content sections based on search results
+    const trendingEvent = events.find(e => e.id === 9); 
+    const verticalEvents = events.filter(e => e.id !== 9).slice(0, 5); 
+    const concerts = events.filter(e => e.category === 'music' && !e.isRequested).slice(0, 5);
+    const sports = events.filter(e => e.category === 'sports').slice(0, 5);
+    const theaterComedy = events.filter(e => e.category === 'theater' || e.category === 'comedy').slice(0, 5);
+    const family = events.filter(e => e.category === 'family').slice(0, 5);
+    
+    // Filtered data for scroll sections
+    const trendingSearches = [...events.slice(1, 6)].sort(() => Math.random() - 0.5); 
+    const sponsoredPresale = [...events.slice(2, 7)];
+
+    return (
+        <div className="bg-white min-h-screen pb-20">
+            {/* 1. Trending Banner (Top Event - Uses standardized size) */}
+            <div className="px-4 pt-4">
+                <EventBanner 
+                    event={trendingEvent} 
+                    setView={setView} 
+                    setSelectedEvent={setSelectedEvent} 
+                />
+            </div>
+            
+            {/* 2. Vertical List of Next 5 Events */}
+            <VerticalEventList 
+                events={verticalEvents} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent} 
+            />
+            
+            {/* 3. Fake Ad Banner */}
+            <div className="p-4">
+                <div className="bg-orange-500 h-24 rounded-lg shadow-md flex items-center justify-center text-white p-4">
+                    <h3 className="text-lg font-semibold">🎪 Travel/Carnival Ad Placeholder</h3>
+                </div>
+            </div>
+            
+            <SectionSeparator />
+            
+            {/* 4. TRENDING SEARCHES Section */}
+            <ScrollableSection 
+                title="TRENDING SEARCHES" 
+                items={trendingSearches} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+            />
+
+            <SectionSeparator />
+
+            {/* 5. SPONSORED PRESALE AND OFFERS Section */}
+            <ScrollableSection 
+                title="SPONSORED PRESALE AND OFFERS" 
+                items={sponsoredPresale} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+                presale={true}
+            />
+
+            <SectionSeparator />
+
+            {/* 6. POPULAR NEAR YOU Sections */}
+            <ScrollableSection 
+                title="POPULAR NEAR YOU - Concerts" 
+                items={concerts} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+            />
+            <ScrollableSection 
+                title="POPULAR NEAR YOU - Sports" 
+                items={sports} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+            />
+            <ScrollableSection 
+                title="POPULAR NEAR YOU - Arts, Theater & Comedy" 
+                items={theaterComedy} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+            />
+            <ScrollableSection 
+                title="POPULAR NEAR YOU - Family" 
+                items={family} 
+                setView={setView} 
+                setSelectedEvent={setSelectedEvent}
+            />
+
+            <SectionSeparator />
+
+            {/* 7. ENTERTAINMENT GUIDES */}
+            <div className="px-4 mt-8">
+                <h2 className="text-2xl font-bold mb-4">ENTERTAINMENT GUIDES</h2>
+                <div className="horizontal-scroll flex space-x-4 pb-4">
+                    {['NFL Tickets', 'NBA Tickets', 'Gift Guide', 'Las Vegas', 'Festivals'].map(guide => (
+                        <div key={guide} className="scroll-item w-[150px] h-[100px] bg-gray-100 border border-gray-300 rounded-lg shadow flex items-center justify-center text-center p-2 text-sm font-semibold cursor-pointer hover:bg-gray-200" style={{ minWidth: '150px' }}>
+                            {guide}
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <SectionSeparator />
+
+            {/* 9. FEATURED Section */}
+            <div className="px-4 mt-8">
+                <h2 className="text-2xl font-bold mb-4">FEATURED</h2>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    {/* These items now use the EventBanner component with a small height to mimic the featured
