@@ -350,7 +350,8 @@ const ScrollableSection = ({ title, items, setView, setSelectedEvent, presale = 
                 <h2 className="text-2xl font-bold">{title}</h2>
                 {/* TEXT COLOR: Primary Blue #0072CE */}
                 <button 
-                    onClick={() => setView('home', items[0]?.category)} // Mock 'See All'
+                    // FIX: Removed inline comment // Mock 'See All' from inside the JSX attribute
+                    onClick={() => setView('home', items[0]?.category)} 
                     className="text-sm tm-primary-blue font-semibold hover:underline"
                 >
                     See All
