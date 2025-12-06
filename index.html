@@ -16,17 +16,17 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-      /* 1. Ticketmaster Primary Blue - #0072CE */
-      .tm-primary-blue { color: #0072CE; }
-      .tm-bg-primary-blue { background-color: #0072CE; }
+      /* 1. Ticketmaster Primary Blue (BRIGHTER) - #008CFF */
+      .tm-primary-blue { color: #008CFF; }
+      .tm-bg-primary-blue { background-color: #008CFF; }
       
       /* 2. Ticketmaster Dark Blue - #003B70 (Used for headers and dark accents) */
       .tm-dark-blue { color: #003B70; }
       .tm-bg-dark-blue { background-color: #003B70; } 
       
-      /* Primary Button Style (Using Primary Blue #0072CE) */
+      /* Primary Button Style (Using Primary Blue #008CFF) */
       .tm-btn { 
-          background: #0072CE; 
+          background: #008CFF; 
           color: white; 
           border: none; 
           padding: 12px 24px; 
@@ -36,13 +36,13 @@
           cursor: pointer; 
           transition: background 0.2s ease; 
       }
-      .tm-btn:hover { background: #005a9f; } 
+      .tm-btn:hover { background: #007acb; } 
       
       /* Scroll Container */
       .horizontal-scroll { scroll-snap-type: x mandatory; overflow-x: scroll; -webkit-overflow-scrolling: touch; }
       .scroll-item { scroll-snap-align: start; flex-shrink: 0; }
       
-      /* Ticketmaster Logo (R symbol size) */
+      /* TICKETMASTER Logo (R symbol size) */
       .tm-logo-r { font-size: 0.5em; position: relative; top: -0.5em; vertical-align: super; }
 
       /* Custom Menu Icon */
@@ -61,14 +61,15 @@ const { useState, useMemo, useEffect, useRef } = React;
 // --- Initial Data (Using HTTPS for all images) ---
 const standardBannerRatio = "w=1170&h=640&fit=crop"; 
 const initialEvents = [
-  { id: 1, title: "Taylor Swift | The Eras Tour", artist: "Taylor Swift", date: "2025-03-15", time: "19:30", venue: "SoFi Stadium", location: "Los Angeles, CA", price: 199, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1541530939527-5d3513a07850?${standardBannerRatio}`, description: "Experience the magic of Taylor Swift's record-breaking Eras Tour", availableTickets: 150 },
+  // Image URLs updated for reliability
+  { id: 1, title: "Taylor Swift | The Eras Tour", artist: "Taylor Swift", date: "2025-03-15", time: "19:30", venue: "SoFi Stadium", location: "Los Angeles, CA", price: 199, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1621373507119-21b931e97d19?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1621373507119-21b931e97d19?${standardBannerRatio}`, description: "Experience the magic of Taylor Swift's record-breaking Eras Tour", availableTickets: 150 },
   { id: 2, title: "NBA Finals - Game 7", artist: "NBA", date: "2025-06-20", time: "20:00", venue: "Madison Square Garden", location: "New York, NY", price: 450, category: "sports", genre: "Basketball", image: `https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1546519638-68e109498ffc?${standardBannerRatio}`, description: "Witness history as two teams battle for the championship", availableTickets: 200 },
-  { id: 3, title: "Hamilton", artist: "Broadway Musical", date: "2025-04-10", time: "20:00", venue: "Richard Rodgers Theatre", location: "New York, NY", price: 175, category: "theater", genre: "Theater", image: `https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1503095396549-807759245b35?${standardBannerRatio}`, description: "The revolutionary Broadway musical phenomenon", availableTickets: 100 },
-  { id: 4, title: "Coldplay World Tour", artist: "Coldplay", date: "2025-05-22", time: "19:00", venue: "Wembley Stadium", location: "London, UK", price: 125, category: "music", genre: "Rock", image: `https://images.unsplash.com/photo-1469854523086-4f74d0a27178?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1469854523086-4f74d0a27178?${standardBannerRatio}`, description: "Don't miss Coldplay's spectacular world tour", availableTickets: 250 },
-  { id: 5, title: "Disney On Ice", artist: "Disney", date: "2025-11-01", time: "14:00", venue: "Staples Center", location: "Los Angeles, CA", price: 50, category: "family", genre: "Ice Show", image: `https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1546519638-68e109498ffc?${standardBannerRatio}`, description: "A magical show for the whole family.", availableTickets: 300 },
-  { id: 6, title: "Kevin Hart: Reality Check", artist: "Kevin Hart", date: "2025-09-19", time: "20:30", venue: "The Apollo Theater", location: "New York, NY", price: 90, category: "comedy", genre: "Comedy", image: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1550751827-4bd374c3f58b?${standardBannerRatio}`, description: "Non-stop laughs from the comedy superstar.", availableTickets: 70 },
-  { id: 7, title: "Inter Miami CF vs LA Galaxy", artist: "MLS", date: "2025-10-10", time: "19:00", venue: "DRV PNK Stadium", location: "Fort Lauderdale, FL", price: 75, category: "sports", genre: "Soccer", image: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1553554483-34e9e0f1d533?${standardBannerRatio}`, description: "A major clash in the MLS season.", availableTickets: 180 },
-  { id: 8, title: "The Lion King Musical", artist: "Broadway Musical", date: "2025-12-05", time: "18:00", venue: "Minskoff Theatre", location: "New York, NY", price: 150, category: "theater", genre: "Musical", image: `https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1503095396549-807759245b35?${standardBannerRatio}`, description: "A classic Disney adaptation on stage.", availableTickets: 120 },
+  { id: 3, title: "Hamilton", artist: "Broadway Musical", date: "2025-04-10", time: "20:00", venue: "Richard Rodgers Theatre", location: "New York, NY", price: 175, category: "theater", genre: "Theater", image: `https://images.unsplash.com/photo-1541355415714-38634860b0e5?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1541355415714-38634860b0e5?${standardBannerRatio}`, description: "The revolutionary Broadway musical phenomenon", availableTickets: 100 },
+  { id: 4, title: "Coldplay World Tour", artist: "Coldplay", date: "2025-05-22", time: "19:00", venue: "Wembley Stadium", location: "London, UK", price: 125, category: "music", genre: "Rock", image: `https://images.unsplash.com/photo-1506173876985-703358055a40?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1506173876985-703358055a40?${standardBannerRatio}`, description: "Don't miss Coldplay's spectacular world tour", availableTickets: 250 },
+  { id: 5, title: "Disney On Ice", artist: "Disney", date: "2025-11-01", time: "14:00", venue: "Staples Center", location: "Los Angeles, CA", price: 50, category: "family", genre: "Ice Show", image: `https://images.unsplash.com/photo-1552554625-78e70a758368?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1552554625-78e70a758368?${standardBannerRatio}`, description: "A magical show for the whole family.", availableTickets: 300 },
+  { id: 6, title: "Kevin Hart: Reality Check", artist: "Kevin Hart", date: "2025-09-19", time: "20:30", venue: "The Apollo Theater", location: "New York, NY", price: 90, category: "comedy", genre: "Comedy", image: `https://images.unsplash.com/photo-1510250917631-073c6837130c?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1510250917631-073c6837130c?${standardBannerRatio}`, description: "Non-stop laughs from the comedy superstar.", availableTickets: 70 },
+  { id: 7, title: "Inter Miami CF vs LA Galaxy", artist: "MLS", date: "2025-10-10", time: "19:00", venue: "DRV PNK Stadium", location: "Fort Lauderdale, FL", price: 75, category: "sports", genre: "Soccer", image: `https://images.unsplash.com/photo-1563290940-a35948332997?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1563290940-a35948332997?${standardBannerRatio}`, description: "A major clash in the MLS season.", availableTickets: 180 },
+  { id: 8, title: "The Lion King Musical", artist: "Broadway Musical", date: "2025-12-05", time: "18:00", venue: "Minskoff Theatre", location: "New York, NY", price: 150, category: "theater", genre: "Musical", image: `https://images.unsplash.com/photo-1541355415714-38634860b0e5?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1541355415714-38634860b0e5?${standardBannerRatio}`, description: "A classic Disney adaptation on stage.", availableTickets: 120 },
   { id: 9, title: "Beyoncé: RENAISSANCE WORLD TOUR", artist: "Beyoncé", date: "2025-07-25", time: "20:00", venue: "MetLife Stadium", location: "East Rutherford, NJ", price: 250, category: "music", genre: "Pop", image: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?w=800&h=600&fit=crop`, banner: `https://images.unsplash.com/photo-1514525253161-1d4400b8e66a?${standardBannerRatio}`, description: "The most talked-about tour of the year.", availableTickets: 50 },
   { 
     id: 10, 
@@ -81,8 +82,8 @@ const initialEvents = [
     price: 798,
     category: "music", 
     genre: "Pop", 
-    image: `https://images.unsplash.com/photo-1628155990263-6e7b165215b3?w=800&h=600&fit=crop`, 
-    banner: `https://images.unsplash.com/photo-1628155990263-6e7b165215b3?${standardBannerRatio}`, 
+    image: `https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop`, 
+    banner: `https://images.unsplash.com/photo-1511379938547-c1f69419868d?${standardBannerRatio}`, 
     description: "The Eternal Sunshine Tour, a massive concert event.", 
     availableTickets: 25,
     isRequested: true
@@ -186,19 +187,20 @@ const NavigationPanel = ({ show, onClose, setView, isLoggedIn, setIsLoggedIn }) 
 
 // --- Shared Components ---
 
-// Simplified Header structure to ensure reliable sticking behavior
+// Header (NO STICKY CLASS APPLIED)
 const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="w-full">
         {/* Container for ALL header bars */}
         <div className="tm-bg-dark-blue w-full"> 
             {/* Top Black Bar: Location/Flag */}
             <div className="bg-black p-2 flex justify-between items-center text-white text-xs">
-                {/* US Flag Icon */}
-                <div className="flex items-center space-x-1 cursor-pointer border border-gray-500 rounded-full p-0.5 hover:bg-gray-800 transition" onClick={() => alert('Country/Region Selector')}>
+                {/* US Flag Icon with White Circle Border */}
+                <div className="flex items-center space-x-1 cursor-pointer border border-white rounded-full p-0.5 hover:bg-gray-800 transition" onClick={() => alert('Country/Region Selector')}>
                     <div className="w-4 h-4 rounded-full overflow-hidden flex items-center justify-center">
-                        <img src="https://flagcdn.com/us.svg" alt="US Flag" className="w-full h-auto" />
+                        {/* Flag URL updated for reliable loading */}
+                        <img src="https://flagcdn.com/w20/us.png" alt="US Flag" className="w-full h-auto" />
                     </div>
-                    <span>US</span>
+                    <span className="text-white">US</span>
                 </div>
             </div>
 
@@ -214,13 +216,13 @@ const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
                         </div>
                     </button>
                     
-                    {/* Ticketmaster Logo (FIXED: Small Caps) - Small 't' uses Primary Blue #0072CE */}
+                    {/* TICKETMASTER Logo (FIXED: Small Caps) - Small 't' uses Primary Blue #008CFF */}
                     <div className="flex items-center cursor-pointer" onClick={() => setView('home')}>
                         <div className="tm-bg-primary-blue rounded w-5 h-5 flex items-center justify-center mr-1">
                             <span style={{ color: 'white', fontSize: '14px', fontWeight: 'bold', fontFamily: 'serif' }}>t</span>
                         </div>
                         <h1 className="text-lg font-bold text-white tracking-widest" style={{ textTransform: 'small-caps' }}>
-                            TICKETMASTER<sup className="tm-logo-r">®</sup>
+                            Ticketmaster<sup className="tm-logo-r">®</sup>
                         </h1>
                     </div>
                 </div>
@@ -260,15 +262,20 @@ const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
             </div>
 
             {/* Search Bar - COLOR: #003B70 */}
+            {/* Click here now loads the SearchPage */}
             <div className="p-3 flex justify-center text-white border-t border-gray-700">
-                <div className="w-full bg-white rounded-lg flex items-center p-2 cursor-text" onClick={() => alert('Search functionality started')}>
+                <div 
+                    className="w-full bg-white rounded-lg flex items-center p-2 cursor-pointer" 
+                    onClick={() => setView('search')}
+                >
                     <div className="flex-1 min-w-0 pl-2">
                         <span className="uppercase text-[10px] font-bold text-gray-400 block">SEARCH</span>
                         <div className="flex items-center justify-between">
-                            <span className="text-gray-500 text-sm truncate">Artist, Event or Venue</span>
+                            {/* Font size increased slightly (text-base) */}
+                            <span className="text-gray-500 text-base truncate">Artist, Event or Venue</span>
                         </div>
                     </div>
-                    {/* ICON COLOR: Primary Blue #0072CE */}
+                    {/* ICON COLOR: Primary Blue #008CFF */}
                     <Search size={24} className="tm-primary-blue flex-shrink-0" />
                 </div>
             </div>
@@ -276,19 +283,27 @@ const HomeHeader = ({ setView, toggleNav, isLoggedIn }) => (
     </header>
 );
 
-const EventBanner = ({ event, setView, setSelectedEvent, isFeatured = false }) => (
+const EventBanner = ({ event, setView, setSelectedEvent, isFeatured = false, isFirstBanner = false }) => (
     <div 
-        className={`relative overflow-hidden rounded-lg shadow-lg cursor-pointer ${isFeatured ? 'h-[100px] sm:h-[140px]' : 'h-[200px] sm:h-[300px]'}`}
+        className={`relative overflow-hidden rounded-lg shadow-lg cursor-pointer h-64 sm:h-80`} // All banners are now large
         onClick={() => { setSelectedEvent(event); setView('detail'); }}
     >
+        {/* Use Image URL from event data */}
         <img 
             src={event.banner} 
             alt={event.title} 
             className="w-full h-full object-cover" 
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-4 flex flex-col justify-end">
-            {!isFeatured && <p className="text-white text-xs font-semibold uppercase">{event.genre} Event</p>}
-            <h3 className="text-white text-xl font-bold">{event.title}</h3>
+            {!isFeatured && <p className="text-white text-sm font-semibold uppercase">{event.genre} Event</p>}
+            <h3 className="text-white text-2xl font-bold">{event.title}</h3>
+            
+            {/* NEW: Small Blue Text Box for the First Banner */}
+            {isFirstBanner && (
+                <div className="absolute bottom-4 left-4 tm-bg-primary-blue p-2 rounded-lg">
+                    <span className="text-white text-base font-semibold">Find Tickets</span>
+                </div>
+            )}
         </div>
     </div>
 );
@@ -296,30 +311,6 @@ const EventBanner = ({ event, setView, setSelectedEvent, isFeatured = false }) =
 const SectionSeparator = () => (
     <div className="px-4">
         <hr className="my-8 border-t border-gray-200" />
-    </div>
-);
-
-// New component for vertical list of events 
-const VerticalEventList = ({ events, setView, setSelectedEvent }) => (
-    <div className="space-y-4 px-4">
-        {events.map(event => (
-            <div 
-                key={event.id}
-                className="relative overflow-hidden rounded-lg shadow-md cursor-pointer border border-gray-100"
-                onClick={() => { setSelectedEvent(event); setView('detail'); }}
-            >
-                {/* Note: Standardized size for banner images */}
-                <img 
-                    src={event.banner} 
-                    alt={event.title} 
-                    className="w-full h-32 object-cover" 
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent p-3 flex flex-col justify-end">
-                    <p className="text-white text-xs font-semibold uppercase">{event.genre}</p>
-                    <h3 className="text-white text-lg font-bold">{event.title}</h3>
-                </div>
-            </div>
-        ))}
     </div>
 );
 
@@ -338,21 +329,27 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
 
     return (
         <div className="bg-white min-h-screen pb-20">
-            {/* 1. Trending Banner (Top Event - Uses standardized size) */}
-            <div className="px-4 pt-4">
+            {/* 1. Trending Banner (Top Event - FIXED: Large size and Blue Box) */}
+            <div className="p-4"> 
                 <EventBanner 
                     event={trendingEvent} 
                     setView={setView} 
                     setSelectedEvent={setSelectedEvent} 
+                    isFirstBanner={true}
                 />
             </div>
             
-            {/* 2. Vertical List of Next 5 Events */}
-            <VerticalEventList 
-                events={verticalEvents} 
-                setView={setView} 
-                setSelectedEvent={setSelectedEvent} 
-            />
+            {/* 2. Vertical List of Next 5 Events (FIXED: All Banners are Large) */}
+            <div className="space-y-4 px-4">
+                {verticalEvents.map(event => (
+                    <EventBanner 
+                        key={event.id}
+                        event={event} 
+                        setView={setView} 
+                        setSelectedEvent={setSelectedEvent} 
+                    />
+                ))}
+            </div>
             
             {/* 3. Fake Ad Banner */}
             <div className="p-4">
@@ -363,18 +360,7 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
             
             <SectionSeparator />
             
-            {/* 4. Placeholder for Removed Scrollable Sections */}
-            <div className="px-4 mt-8">
-                <h2 className="text-2xl font-bold mb-4">POPULAR EVENTS (Scrollable Sections Removed)</h2>
-                <p className="text-gray-500">
-                    Horizontal scrollable content was removed to fix the persistent syntax error. 
-                    The main content is now displayed below.
-                </p>
-            </div>
-            
-            <SectionSeparator />
-
-            {/* 5. ENTERTAINMENT GUIDES (Now just a standard grid/list, no horizontal scroll) */}
+            {/* 4. ENTERTAINMENT GUIDES */}
             <div className="px-4 mt-8">
                 <h2 className="text-2xl font-bold mb-4">ENTERTAINMENT GUIDES</h2>
                 <div className="grid grid-cols-2 gap-4">
@@ -392,25 +378,73 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
 
             <SectionSeparator />
 
-            {/* 6. FEATURED Section */}
+            {/* 5. FEATURED Section */}
             <div className="px-4 mt-8">
                 <h2 className="text-2xl font-bold mb-4">FEATURED</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <EventBanner event={{ title: "Hotels", banner: "https://images.unsplash.com/photo-1542315809-548773998b5a?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
-                    <EventBanner event={{ title: "Ticket Deals", banner: "https://images.unsplash.com/photo-1563290940-a35948332997?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
-                    <EventBanner event={{ title: "VIP Packages", banner: "https://images.unsplash.com/photo-1588661642845-f09d273c52e1?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
-                    <EventBanner event={{ title: "Sell on TM", banner: "https://images.unsplash.com/photo-1517048676732-5178f28d82f7?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
+                    <div className="h-[100px] sm:h-[140px] relative overflow-hidden rounded-lg shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1542315809-548773998b5a?w=400&h=100&fit=crop" alt="Hotels" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-bold">Hotels</span></div>
+                    </div>
+                    <div className="h-[100px] sm:h-[140px] relative overflow-hidden rounded-lg shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1563290940-a35948332997?w=400&h=100&fit=crop" alt="Ticket Deals" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-bold">Ticket Deals</span></div>
+                    </div>
+                    <div className="h-[100px] sm:h-[140px] relative overflow-hidden rounded-lg shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1588661642845-f09d273c52e1?w=400&h=100&fit=crop" alt="VIP Packages" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-bold">VIP Packages</span></div>
+                    </div>
+                    <div className="h-[100px] sm:h-[140px] relative overflow-hidden rounded-lg shadow-lg">
+                        <img src="https://images.unsplash.com/photo-1517048676732-5178f28d82f7?w=400&h=100&fit=crop" alt="Sell on TM" className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-bold">Sell on TM</span></div>
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
+// --- New Dedicated Search Page Component ---
+const SearchPage = ({ setView }) => (
+    <div className="min-h-screen bg-white">
+        {/* Search Header Bar */}
+        <div className="p-3 flex items-center border-b tm-bg-dark-blue">
+            <button onClick={() => setView('home')} className="p-1 text-white mr-3">
+                <ChevronLeft size={24} />
+            </button>
+            <div className="w-full bg-white rounded-lg flex items-center p-2">
+                <div className="flex-1 min-w-0 pl-2">
+                    <input 
+                        type="text"
+                        placeholder="Artist, Event or Venue"
+                        className="w-full text-gray-700 text-base placeholder-gray-500 focus:outline-none"
+                        autoFocus
+                    />
+                </div>
+                <Search size={24} className="tm-primary-blue flex-shrink-0" />
+            </div>
+        </div>
+        
+        {/* Search Content Body */}
+        <div className="p-4">
+            <h3 className="text-lg font-bold mb-3">Trending Searches</h3>
+            <ul className="space-y-2">
+                {['Taylor Swift', 'NBA Finals', 'Concerts Tonight', 'Comedians'].map((term) => (
+                    <li key={term} className="text-gray-700 p-2 border-b border-gray-100 cursor-pointer hover:bg-gray-50">
+                        {term}
+                    </li>
+                ))}
+            </ul>
+        </div>
+    </div>
+);
+
 // --- Mobile Navigation Bar ---
 const MobileNavBar = ({ currentView, setView }) => {
     const navItems = [
         { label: "Home", icon: TicketIcon, view: "home" },
-        { label: "My Events", icon: Calendar, view: "mytickets" },
+        // Added Search to the bottom bar for easy access
+        { label: "Search", icon: Search, view: "search" }, 
         { label: "Favorites", icon: Heart, view: "favorites" },
         { label: "Account", icon: User, view: "account" },
     ];
@@ -565,6 +599,8 @@ const App = () => {
                 return <AccountPage />;
             case 'mytickets':
                 return <MyTicketsPage />;
+            case 'search':
+                return <SearchPage setView={setView} />;
             case 'home':
             default:
                 return <HomePage 
@@ -586,7 +622,7 @@ const App = () => {
                 setIsLoggedIn={setIsLoggedIn}
             />
 
-            {/* Header (Sticky at the top) */}
+            {/* Header (No longer sticky) */}
             <HomeHeader 
                 setView={setView} 
                 toggleNav={toggleNav} 
