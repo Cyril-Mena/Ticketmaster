@@ -324,96 +324,17 @@ const VerticalEventList = ({ events, setView, setSelectedEvent }) => (
 );
 
 
-// --- RESTORED & SIMPLIFIED SCROLLABLE SECTION ---
-const ScrollableSection = ({ title, items, presale = false }) => {
-    const scrollRef = useRef(null);
-    const [showArrows, setShowArrows] = useState(false);
-    
-    useEffect(() => {
-        if (scrollRef.current) {
-             const { scrollWidth, clientWidth } = scrollRef.current;
-             // Only show arrows if content overflows, making it scrollable
-             setShowArrows(scrollWidth > clientWidth);
-        }
-    }, [items]);
-    
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: direction === 'left' ? -250 : 250, behavior: 'smooth' });
-        }
-    };
-    
-    return (
-        <div className="mt-8">
-            <div className="flex justify-between items-center px-4 mb-4">
-                <h2 className="text-2xl font-bold">{title}</h2>
-                {/* SIMPLIFIED onClick: FUNCTIONALITY REMOVED TO PREVENT SYNTAX ERROR */}
-                <button 
-                    onClick={() => alert('See All feature disabled for demo.')} 
-                    className="text-sm tm-primary-blue font-semibold hover:underline"
-                >
-                    See All
-                </button>
-            </div>
-            
-            <div className="relative">
-                <div ref={scrollRef} className="horizontal-scroll flex space-x-4 px-4 pb-4">
-                    {items.map(event => (
-                        <div 
-                            key={event.id} 
-                            className="scroll-item w-[160px] relative" 
-                            style={{ minWidth: '160px' }} 
-                            // SIMPLIFIED onClick: FUNCTIONALITY REMOVED TO PREVENT SYNTAX ERROR
-                            onClick={() => alert(`Showing details for ${event.title}`)}
-                        >
-                            <img 
-                                src={event.image} 
-                                alt={event.title} 
-                                className="w-full h-32 object-cover rounded-lg shadow cursor-pointer"
-                            />
-                            {presale && (
-                                <span className="absolute top-1 left-1 tm-bg-primary-blue text-white text-[10px] font-bold px-2 py-0.5 rounded">PRESALE</span>
-                            )}
-                            <div className="mt-2 text-sm">
-                                <p className="text-gray-500 text-xs uppercase">{event.genre}</p>
-                                {/* SIMPLIFIED onClick: FUNCTIONALITY REMOVED TO PREVENT SYNTAX ERROR */}
-                                <button onClick={() => alert(`Showing events by ${event.artist}`)} className="tm-primary-blue font-semibold text-left text-sm hover:underline">{event.artist}</button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-                {/* Navigation Arrows (Mock) - Hidden on smaller screens */}
-                {showArrows && (
-                    <>
-                        {/* SIMPLIFIED onClick: FUNCTIONALITY REMAINS TO SHOW SCROLLING */}
-                        <button onClick={() => scroll('left')} className="absolute left-0 top-1/2 -mt-6 bg-white rounded-full shadow-lg p-2 transform -translate-y-1/2 ml-2 z-10 hidden md:block">
-                            <ChevronLeft size={24} className="text-gray-700" />
-                        </button>
-                        <button onClick={() => scroll('right')} className="absolute right-0 top-1/2 -mt-6 bg-white rounded-full shadow-lg p-2 transform -translate-y-1/2 mr-2 z-10 hidden md:block">
-                            <ChevronRight size={24} className="text-gray-700" />
-                        </button>
-                    </>
-                )}
-            </div>
-        </div>
-    );
-};
-
-
 // --- Full Page Components ---
 
 const HomePage = ({ events, setView, setSelectedEvent }) => {
     // Content sections based on search results
     const trendingEvent = events.find(e => e.id === 9); 
+    // Filter out the trending event and take the next 5 for the vertical list
     const verticalEvents = events.filter(e => e.id !== 9).slice(0, 5); 
-    const concerts = events.filter(e => e.category === 'music' && !e.isRequested).slice(0, 5);
-    const sports = events.filter(e => e.category === 'sports').slice(0, 5);
-    const theaterComedy = events.filter(e => e.category === 'theater' || e.category === 'comedy').slice(0, 5);
-    const family = events.filter(e => e.category === 'family').slice(0, 5);
     
-    // Filtered data for scroll sections
-    const trendingSearches = [...events.slice(1, 6)].sort(() => Math.random() - 0.5); 
-    const sponsoredPresale = [...events.slice(2, 7)];
+    // The previous scrollable content categories are now simple placeholders
+    const guideItems = ['NFL Tickets', 'NBA Tickets', 'Gift Guide', 'Las Vegas', 'Festivals'];
+
 
     return (
         <div className="bg-white min-h-screen pb-20">
@@ -421,7 +342,6 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
             <div className="px-4 pt-4">
                 <EventBanner 
                     event={trendingEvent} 
-                    // SetView and SetSelectedEvent are now handled within the component's internal alert 
                     setView={setView} 
                     setSelectedEvent={setSelectedEvent} 
                 />
@@ -443,50 +363,27 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
             
             <SectionSeparator />
             
-            {/* 4. TRENDING SEARCHES Section - RESTORED WITH SCROLLING */}
-            <ScrollableSection 
-                title="TRENDING SEARCHES" 
-                items={trendingSearches} 
-                // Removed setView and setSelectedEvent props as they are no longer used
-            />
-
+            {/* 4. Placeholder for Removed Scrollable Sections */}
+            <div className="px-4 mt-8">
+                <h2 className="text-2xl font-bold mb-4">POPULAR EVENTS (Scrollable Sections Removed)</h2>
+                <p className="text-gray-500">
+                    Horizontal scrollable content was removed to fix the persistent syntax error. 
+                    The main content is now displayed below.
+                </p>
+            </div>
+            
             <SectionSeparator />
 
-            {/* 5. SPONSORED PRESALE AND OFFERS Section - RESTORED WITH SCROLLING */}
-            <ScrollableSection 
-                title="SPONSORED PRESALE AND OFFERS" 
-                items={sponsoredPresale} 
-                presale={true}
-            />
-
-            <SectionSeparator />
-
-            {/* 6. POPULAR NEAR YOU Sections - RESTORED WITH SCROLLING */}
-            <ScrollableSection 
-                title="POPULAR NEAR YOU - Concerts" 
-                items={concerts} 
-            />
-            <ScrollableSection 
-                title="POPULAR NEAR YOU - Sports" 
-                items={sports} 
-            />
-            <ScrollableSection 
-                title="POPULAR NEAR YOU - Arts, Theater & Comedy" 
-                items={theaterComedy} 
-            />
-            <ScrollableSection 
-                title="POPULAR NEAR YOU - Family" 
-                items={family} 
-            />
-
-            <SectionSeparator />
-
-            {/* 7. ENTERTAINMENT GUIDES */}
+            {/* 5. ENTERTAINMENT GUIDES (Now just a standard grid/list, no horizontal scroll) */}
             <div className="px-4 mt-8">
                 <h2 className="text-2xl font-bold mb-4">ENTERTAINMENT GUIDES</h2>
-                <div className="horizontal-scroll flex space-x-4 pb-4">
-                    {['NFL Tickets', 'NBA Tickets', 'Gift Guide', 'Las Vegas', 'Festivals'].map(guide => (
-                        <div key={guide} className="scroll-item w-[150px] h-[100px] bg-gray-100 border border-gray-300 rounded-lg shadow flex items-center justify-center text-center p-2 text-sm font-semibold cursor-pointer hover:bg-gray-200" style={{ minWidth: '150px' }}>
+                <div className="grid grid-cols-2 gap-4">
+                    {guideItems.map(guide => (
+                        <div 
+                            key={guide} 
+                            className="h-[80px] bg-gray-100 border border-gray-300 rounded-lg shadow flex items-center justify-center text-center p-2 text-sm font-semibold cursor-pointer hover:bg-gray-200"
+                            onClick={() => alert(`Navigating to ${guide}`)}
+                        >
                             {guide}
                         </div>
                     ))}
@@ -495,22 +392,21 @@ const HomePage = ({ events, setView, setSelectedEvent }) => {
 
             <SectionSeparator />
 
-            {/* 9. FEATURED Section */}
+            {/* 6. FEATURED Section */}
             <div className="px-4 mt-8">
                 <h2 className="text-2xl font-bold mb-4">FEATURED</h2>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    {/* These items now use the EventBanner component with a small height to mimic the featured box banners */}
-                    <EventBanner event={{ title: "Hotels", banner: "https://images.unsplash.com/photo-1542315809-548773998b5a?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => {}} />
-                    <EventBanner event={{ title: "Ticket Deals", banner: "https://images.unsplash.com/photo-1563290940-a35948332997?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => {}} />
-                    <EventBanner event={{ title: "VIP Packages", banner: "https://images.unsplash.com/photo-1588661642845-f09d273c52e1?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => {}} />
-                    <EventBanner event={{ title: "Sell on TM", banner: "https://images.unsplash.com/photo-1517048676732-5178f28d82f7?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => {}} />
+                    <EventBanner event={{ title: "Hotels", banner: "https://images.unsplash.com/photo-1542315809-548773998b5a?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
+                    <EventBanner event={{ title: "Ticket Deals", banner: "https://images.unsplash.com/photo-1563290940-a35948332997?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
+                    <EventBanner event={{ title: "VIP Packages", banner: "https://images.unsplash.com/photo-1588661642845-f09d273c52e1?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
+                    <EventBanner event={{ title: "Sell on TM", banner: "https://images.unsplash.com/photo-1517048676732-5178f28d82f7?w=400&h=100&fit=crop" }} isFeatured={true} setView={setView} setSelectedEvent={() => alert('Feature disabled.')} />
                 </div>
             </div>
         </div>
     );
 };
 
-// --- Mobile Navigation Bar (RESTORED) ---
+// --- Mobile Navigation Bar ---
 const MobileNavBar = ({ currentView, setView }) => {
     const navItems = [
         { label: "Home", icon: TicketIcon, view: "home" },
@@ -634,7 +530,7 @@ const DetailPage = ({ event }) => {
 
 // --- Main Application Component ---
 const App = () => {
-    const [currentView, setCurrentView] = useState('home'); // 'home', 'detail', 'cart', 'favorites', 'account'
+    const [currentView, setCurrentView] = useState('home'); 
     const [selectedEvent, setSelectedEvent] = useState(null);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -660,7 +556,6 @@ const App = () => {
     const renderContent = () => {
         switch (currentView) {
             case 'detail':
-                // Check if selectedEvent is valid before rendering
                 return <DetailPage event={selectedEvent} />;
             case 'cart':
                 return <CartPage />;
@@ -672,7 +567,6 @@ const App = () => {
                 return <MyTicketsPage />;
             case 'home':
             default:
-                // Only pass filtered events if a filter is active
                 return <HomePage 
                     events={filterCategory ? filteredEvents : initialEvents} 
                     setView={setView} 
